@@ -1,6 +1,3 @@
-using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -8,14 +5,16 @@ public class PlayerDetector : MonoBehaviour
 {
     private Zproject _defaultPlayerActions;
     public DialogueBox _dialogueBox;
-    public TextMeshProUGUI textMeshProUGUI = new();
-    private bool isDialogueOpen = false;
-    private bool isInTrigger;
+    private bool _isDialogueOpen = false;
+    private bool _isInTrigger;
+    public bool IsPossessed = false;
+    public bool QuestAccepted = false;
+    private string pnjMessage;
+
 
     private void Awake()
     {
         _defaultPlayerActions = new Zproject();
-        _dialogueBox.TextComponent = textMeshProUGUI;
     }
     private void OnEnable()
     {
@@ -24,46 +23,98 @@ public class PlayerDetector : MonoBehaviour
     }
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("PNJ-001"))
-        {
-            isInTrigger = true;
-        }
-    }
-    void OnPressActionButton(InputAction.CallbackContext context)
-    {
-        if (!isInTrigger) return; // Ne rien faire si le joueur n’est pas dans le trigger
+        //PNJ
+        HandlePNJ001(other);
+        HandlePNJ002(other);
 
-        if (isDialogueOpen)
-        {
-            _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
-            _dialogueBox.gameObject.SetActive(false);
-            isDialogueOpen = false;
-        }
-        else
-        {
-            _dialogueBox.gameObject.SetActive(true);
-            _dialogueBox.StartDialogue(_dialogueBox.TextComponent);
-            isDialogueOpen = true;
-        }
+        //Items
+        HandleGlassBeer(other);
     }
-    private void OnTriggerExit(Collider other)
+
+    private void HandlePNJ001(Collider other)
     {
         if (other.CompareTag("PNJ-001"))
         {
-            isInTrigger = false;
+            _isInTrigger = true;
+            pnjMessage = "Bonjour, je ne t'ai jamais vue ici je suis Mr.Denmark, je ne trouve pas ma goubette enfin ma femme l'aurais tu vue ?";
+        }
+    }
+    private void HandlePNJ002(Collider other)
+    {
+        if (other.CompareTag("PNJ-002"))
+        {
+            Debug.Log("tag = " + other.tag);
 
-            // Optionnel : fermer le dialogue si tu quittes la zone
-            if (isDialogueOpen)
+            if (!IsPossessed && !QuestAccepted)
             {
-                _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
-                _dialogueBox.gameObject.SetActive(false);
-                isDialogueOpen = false;
+                _isInTrigger = true;
+                pnjMessage = "Bonjour, Je crois que mon homme est faché car j'ai perdu son verre de mousse";
+            }
+            else if (IsPossessed && QuestAccepted)
+            {
+                _isInTrigger = true;
+                pnjMessage = "Ooh Super tu as trouvé le verre de mousse, mon mari sera ravie :D.";
+                IsPossessed = false;
             }
         }
     }
-    private void OnDisable()
+    private void HandleGlassBeer(Collider other)
     {
-        _defaultPlayerActions.Player.Action.performed -= OnPressActionButton;
+        if (other.CompareTag("GLASSBEER"))
+        {
+            IsPossessed = true;
+            other.gameObject.SetActive(false);
+        }
     }
 
+    void OnPressActionButton(InputAction.CallbackContext context)
+    {
+        if (!_isInTrigger) return;
+
+        if (!_isDialogueOpen)
+        {
+            _dialogueBox.gameObject.SetActive(true);
+            _dialogueBox.TextComponent.text = pnjMessage;
+            _dialogueBox.StartDialogue(_dialogueBox.TextComponent);
+            _isDialogueOpen = true;
+        }
+        else
+        {
+            _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
+            _dialogueBox.gameObject.SetActive(false);
+            _isDialogueOpen = false;
+            if (pnjMessage.Contains("mon homme est faché"))
+            {
+                QuestAccepted = true;
+                Debug.Log("Quête acceptée après dialogue !");
+            }
+        }
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("PNJ-001") || other.CompareTag("PNJ-002"))
+        {
+            SetActiveWithMessage();
+        }
+    }
+
+    private void SetActiveWithMessage()
+    {
+        _isInTrigger = false;
+
+        if (_isDialogueOpen)
+        {
+            _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
+            _dialogueBox.gameObject.SetActive(false);
+            _isDialogueOpen = false;
+        }
+    }
+
+    private void OnDisable()
+    {
+        if (_defaultPlayerActions?.Player.Action != null)
+            _defaultPlayerActions.Player.Action.performed -= OnPressActionButton;
+    }
 }
+

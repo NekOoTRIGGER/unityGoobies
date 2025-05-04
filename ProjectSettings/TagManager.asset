@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 3
   tags:
   - PNJ
+  - PNJ-001
+  - PNJ-002
+  - GLASSBEER
   layers:
   - Default
   - TransparentFX

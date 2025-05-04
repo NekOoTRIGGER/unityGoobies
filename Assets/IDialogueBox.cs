@@ -2,5 +2,5 @@
 
 public interface IDialogueBox
 {
-    void StartDialogue(TextMeshProUGUI TextComponent);
+    void StartDialogue(TMP_Text TextComponent);
 }

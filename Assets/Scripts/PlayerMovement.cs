@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody>();
         _groundLayerMask = LayerMask.GetMask("Ground");
     }
+
     private void OnEnable()
     {
         _moveAction = _defaultPlayerActions.Player.Move;
@@ -25,21 +26,24 @@ public class PlayerMovement : MonoBehaviour
         _defaultPlayerActions.Player.Jump.Enable();
         _defaultPlayerActions.Player.Jump.performed += OnJump;
     }
+
     private void OnDisable()
     {
         _moveAction = _defaultPlayerActions.Player.Move;
         _moveAction.Disable();
     }
+
     private void FixedUpdate()
     {
         _isGrounded = Physics.Raycast(GroundCheck.position, Vector3.down, 0.05f);
-        
+
         Vector2 moveDir = _moveAction.ReadValue<Vector2>();
         Vector3 vel = _rigidBody.linearVelocity;
         vel.x = _movementSpeed * moveDir.x;
         vel.z = _movementSpeed * moveDir.y;
         _rigidBody.linearVelocity = vel;
     }
+
     private void OnJump(InputAction.CallbackContext context)
     {
         if (_isGrounded)

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class DialogueBox : MonoBehaviour, IDialogueBox
 {
-    public TextMeshProUGUI TextComponent;
+    public TMP_Text TextComponent;
     public string[] Lines;
     public float TextSpeed = 0.2f;
     private int index;
@@ -13,15 +13,13 @@ public class DialogueBox : MonoBehaviour, IDialogueBox
     {
         this.Lines = lines;
     }
-    public void StopDialogue(TextMeshProUGUI TextComponent)
+    public void StopDialogue(TMP_Text TextComponent)
     {
         TextComponent.enabled = false;
         TextComponent.text = string.Empty;
-
-
     }
 
-    public void StartDialogue(TextMeshProUGUI TextComponent)
+    public void StartDialogue(TMP_Text TextComponent)
     {
         if (TextComponent != null)
         {
@@ -30,7 +28,7 @@ public class DialogueBox : MonoBehaviour, IDialogueBox
             StartCoroutine(TypeLine(TextComponent));
         }
     }
-    IEnumerator TypeLine(TextMeshProUGUI TextComponent)
+    IEnumerator TypeLine(TMP_Text TextComponent)
     {
         foreach (var c in Lines[index].ToCharArray())
         {
