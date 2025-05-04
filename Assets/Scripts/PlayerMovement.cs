@@ -7,8 +7,8 @@ public class PlayerMovement : MonoBehaviour
     private Zproject _defaultPlayerActions;
     private InputAction _moveAction;
     private Rigidbody _rigidBody;
-    private float _movementSpeed = 6f;
-    private float _jumpForce = 6f;
+    private readonly float _movementSpeed = 6f;
+    private readonly float _jumpForce = 6f;
     private bool _isGrounded;
     private LayerMask _groundLayerMask;
 

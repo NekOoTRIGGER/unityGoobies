@@ -10,7 +10,7 @@ public class PlayerDetector : MonoBehaviour
     public DialogueBox _dialogueBox;
     public TextMeshProUGUI textMeshProUGUI = new();
     private bool isDialogueOpen = false;
-
+    private bool isInTrigger;
 
     private void Awake()
     {
@@ -22,28 +22,48 @@ public class PlayerDetector : MonoBehaviour
         _defaultPlayerActions.Player.Action.Enable();
         _defaultPlayerActions.Player.Action.performed += OnPressActionButton;
     }
-
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.CompareTag("PNJ-001"))
+        {
+            isInTrigger = true;
+        }
+    }
     void OnPressActionButton(InputAction.CallbackContext context)
     {
+        if (!isInTrigger) return; // Ne rien faire si le joueur n’est pas dans le trigger
+
         if (isDialogueOpen)
         {
-            // Fermer le dialogue
-            _dialogueBox.StopDialogue(_dialogueBox.TextComponent);  // Assure-toi que cette méthode existe
+            _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
             _dialogueBox.gameObject.SetActive(false);
             isDialogueOpen = false;
         }
         else
         {
-            // Ouvrir le dialogue
             _dialogueBox.gameObject.SetActive(true);
             _dialogueBox.StartDialogue(_dialogueBox.TextComponent);
             isDialogueOpen = true;
         }
+    }
+    private void OnTriggerExit(Collider other)
+    {
+        if (other.CompareTag("PNJ-001"))
+        {
+            isInTrigger = false;
 
+            // Optionnel : fermer le dialogue si tu quittes la zone
+            if (isDialogueOpen)
+            {
+                _dialogueBox.StopDialogue(_dialogueBox.TextComponent);
+                _dialogueBox.gameObject.SetActive(false);
+                isDialogueOpen = false;
+            }
+        }
     }
     private void OnDisable()
     {
         _defaultPlayerActions.Player.Action.performed -= OnPressActionButton;
     }
- 
+
 }
