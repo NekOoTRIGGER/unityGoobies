@@ -7,8 +7,8 @@ public class PlayerMovement : MonoBehaviour
     private Zproject _defaultPlayerActions;
     private InputAction _moveAction;
     private Rigidbody _rigidBody;
-    private readonly float _movementSpeed = 6f;
-    private readonly float _jumpForce = 6f;
+    private readonly float _movementSpeed = 4f;
+    private readonly float _jumpForce = 3f;
     private bool _isGrounded;
     private LayerMask _groundLayerMask;
 
@@ -37,7 +37,7 @@ public class PlayerMovement : MonoBehaviour
     {
         _isGrounded = Physics.Raycast(GroundCheck.position, Vector3.down, 0.05f);
 
-        Vector2 moveDir = _moveAction.ReadValue<Vector2>();
+            Vector2 moveDir = _moveAction.ReadValue<Vector2>();
         Vector3 vel = _rigidBody.linearVelocity;
         vel.x = _movementSpeed * moveDir.x;
         vel.z = _movementSpeed * moveDir.y;
@@ -48,6 +48,7 @@ public class PlayerMovement : MonoBehaviour
     {
         if (_isGrounded)
         {
+            Debug.Log("au sol");
             _rigidBody.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
     }

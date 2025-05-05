@@ -5,6 +5,8 @@ public class PlayerDetector : MonoBehaviour
 {
     private Zproject _defaultPlayerActions;
     public DialogueBox _dialogueBox;
+    public DeplacementPNJ pnj2DeplacementScript;
+    public QuestStatus _questStatus;
     private bool _isDialogueOpen = false;
     private bool _isInTrigger;
     public bool IsPossessed = false;
@@ -43,18 +45,19 @@ public class PlayerDetector : MonoBehaviour
     {
         if (other.CompareTag("PNJ-002"))
         {
-            Debug.Log("tag = " + other.tag);
+            _isInTrigger = true;
 
-            if (!IsPossessed && !QuestAccepted)
+            if (!QuestAccepted && !IsPossessed)
             {
-                _isInTrigger = true;
                 pnjMessage = "Bonjour, Je crois que mon homme est faché car j'ai perdu son verre de mousse";
+            }
+            else if (!IsPossessed && QuestAccepted)
+            {
+                pnjMessage = "Vivement que je retrouve ce verre ...";
             }
             else if (IsPossessed && QuestAccepted)
             {
-                _isInTrigger = true;
                 pnjMessage = "Ooh Super tu as trouvé le verre de mousse, mon mari sera ravie :D.";
-                IsPossessed = false;
             }
         }
     }
@@ -86,8 +89,14 @@ public class PlayerDetector : MonoBehaviour
             if (pnjMessage.Contains("mon homme est faché"))
             {
                 QuestAccepted = true;
-                Debug.Log("Quête acceptée après dialogue !");
             }
+            if (pnjMessage.Contains("Super tu as trouvé"))
+            {
+                pnj2DeplacementScript.AllerVersCible();
+                _questStatus.QuestFinish();
+            }
+                        
+
         }
     }
 
