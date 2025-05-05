@@ -632,6 +632,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _dialogueBox: {fileID: 365631591}
   pnj2DeplacementScript: {fileID: 1495001952}
+  _questStatus: {fileID: 211406083}
   IsPossessed: 0
   QuestAccepted: 0
 --- !u!1 &117764128
